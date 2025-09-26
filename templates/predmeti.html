@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block content%}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <a class="navbar-brand" href="#">Evidencija studenata</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('Studenti')}}">Studenti</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{url_for('Predmeti')}}">Predmeti</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('Korisnici')}}">Korisnici</a>
+                </li>
+            </ul>
+            <div class="text-right">
+                <a href="{{url_for('Logout')}}" class="icon-btn text-warning"  role="button"><i class="fas fa-sign-out-alt text-white"></i></a>
+            </div>
+        </div>
+</nav>
+
+
+<section class="py-5">
+	<div class="container">
+		<div class='row justify-content-end my-5'>
+        	<a class="btn btn-primary text-white" role="button" data-toggle="modal" data-target="#modalnew">Dodaj predmet</a>
+		</div>
+              {%with messages = get_flashed_messages()%}
+              {%if messages%}
+              {% for message in messages %}
+              <div class="alert alert-success alert-dismissable" role="alert">
+                  <button type="button" class="close" data-dismiss="alert" aria-label ="close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+                  {{message}}
+              </div>
+              {%endfor%}
+              {%endif%}
+              {%endwith%}
+		<div class='row justify-content-center'>
+			<table class="table">
+				<thead>
+			    	<tr>
+			      		<th scope="col">Šifra predmeta</th>
+			      		<th scope="col">Naziv predmeta</th>
+			      		<th scope="col">Godina studija</th>
+			      		<th scope="col">ESPB</th>
+			      		<th scope="col">Status predmeta</th>
+			      		<th scope="col">Akcije</th>
+			    	</tr>
+				</thead>
+				<tbody>
+					{% for predmet in predmeti %}
+			    	<tr>
+			      		<td>{{ predmet.sifra }}</td>
+			      		<td>{{ predmet.naziv }}</td>
+			      		<td>{{ predmet.godina_studija }}</td>
+			      		<td>{{ predmet.espb }}</td>
+			      		<td>{{ predmet.izbor }}</td>
+			      		<td>
+			      			<a href="/predmet_izmena/{{predmet.id}}" class="icon-btn text-warning" data-toggle="modal" data-target="#modaledit{{predmet.id}}" role="button"><i class="fas fa-edit"></i></a>&nbsp;
+			      			<a class="icon-btn text-danger" href="/predmet_brisanje/{{predmet.id}}" onclick="return confirm('Da li ste sigurni da želite da obrišete navedeni predmet?')" role="button"><i class="fas fa-trash-alt"></i></a>
+			      		</td>
+			    	</tr>
+            <div id="modaledit{{predmet.id}}" class="modal fade" role="dialog">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <!-- Modal Header -->
+                          <div class="modal-header">
+                            <h4 class="modal-title">Predmet - izmena</h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                          </div>
+                          <!-- Modal body -->
+                          <div class="modal-body">
+                            <form action="{{url_for('PredmetIzmena')}}" method="POST">
+                                <div class="form-group">
+                                    <label for="SubjectCode">Šifra predmeta</label>
+                                    <input type="hidden" name="id" value="{{predmet.id}}">
+                                    <input type="text" class="form-control" name="sifra" id="sifra" value="{{predmet.sifra}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="SubjectName">Naziv predmeta</label>
+                                    <input type="text" class="form-control" name="naziv" id="naziv" value="{{predmet.naziv}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="YearOfStudy">Godina studija</label>
+                                    <input type="number" class="form-control" name="godina_studija" id="godina_studija" value="{{predmet.godina_studija}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="ESPBP">ESPB</label>
+                                    <input type="number" class="form-control" name="espb" id="espb" value="{{predmet.espb}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="StatusPredmeta">Status predmeta</label>
+                                    <select class="form-control" name="izbor" id="izbor" value="{{predmet.izbor}}">
+                                        <option>Obavezni</option>
+                                        <option>Izborni</option>
+                                    </select>
+                                </div>
+                                    <input type="submit" class="btn btn-primary text-white" value="Sačuvaj">
+                            </form>
+                          </div>
+                        <!-- Modal footer -->
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Otkaži</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+			    	{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</section>
+
+<div id="modalnew" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+              <h4 class="modal-title">Novi student</h4>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+              <form action="{{url_for('NoviPredmet')}}" method="POST">
+                <div class="form-group">
+                    <label for="SubjectCode">Šifra predmeta</label>
+                    <input type="text" class="form-control" name="sifra" id="sifra">
+                </div>
+                <div class="form-group">
+                    <label for="SubjectName">Naziv predmeta</label>
+                    <input type="text" class="form-control" name="naziv" id="naziv">
+                </div>
+                <div class="form-group">
+                <label for="YearOfStudy">Godina studija</label>
+                <input type="number" class="form-control" name="godina_studija" id="godina_studija">
+                </div>
+                <div class="form-group">
+                    <label for="ESPBP">ESPB</label>
+                    <input type="number" class="form-control" name="espb" id="espb">
+                </div>
+                <div class="form-group">
+                    <label for="StatusPredmeta">Status predmeta</label>
+                    <select class="form-control" name="izbor" id="izbor">
+                        <option disabled selected>Obavezni/Izborni</option>
+                        <option>Obavezni</option>
+                        <option>Izborni</option>
+                    </select>
+                </div>
+                <input type="submit" class="btn btn-primary text-white" value="Sačuvaj">
+            </form>
+            </div>
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Otkaži</button>
+          </div>
+        </div>
+      </div>
+</div>
+
+
+{% endblock %}

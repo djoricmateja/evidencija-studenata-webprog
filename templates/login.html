@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content%}
+
+<div class="container">
+  <div class="row justify-content-center my-5">
+      <img src="/static/img/logo.png">
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-lg-6 col-xs-12">
+      <form action="{{url_for('Login')}}" method="POST">
+        <div class="form-group">
+          <label for="Email">Email</label>
+          <input type="email" class="form-control" name="kemail" id="kemail" required>
+        </div>
+        <div class="form-group">
+          <label for="name">Lozinka</label>
+          <input type="password" class="form-control" name="lozinka" id="loznka" required>
+        </div>
+        <input type="submit" class="btn btn-primary text-white" value="Prijavi se">
+      </form>
+      <br/>
+      {%with messages = get_flashed_messages()%}
+      {%if messages%}
+      {% for message in messages %}
+      <div class="alert alert-danger alert-dismissable" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label ="close">
+              <span aria-hidden="true">&times;</span>
+          </button>
+          {{message}}
+      </div>
+      {%endfor%}
+      {%endif%}
+      {%endwith%}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
